@@ -10,7 +10,19 @@ import XCTest
 
 final class RecipeAppTests: XCTestCase {
 
-    // Valid JSON Decoding
+    // MARK: - Tests
+    /// 1. Empty JSON
+    func test_emptyJSON() {
+        let emptyJSONList = ["recipes": []]
+        let jsonData = try! JSONSerialization.data(withJSONObject: emptyJSONList, options: .prettyPrinted)
+        
+        XCTAssertThrowsError(try RecipeMapper.decode(from: jsonData)) { error in
+            XCTAssertEqual(error as? RecipeMapper.RecipeMapperError, .emptyList, "No recipes are available")
+        }
+        
+    }
+    
+    /// 2. Valid JSON Decoding
     func test_validateJSON() throws {
         // Arrange: Valid JSON
         let recipeJSON = makeRecipeItem(cuisine: "British",
@@ -36,6 +48,8 @@ final class RecipeAppTests: XCTestCase {
         XCTAssertEqual(recipes, expectedRecipes)
     }
     
+    
+    // MARK: - Helpers
     private func makeRecipeItem(cuisine: String, name: String? = nil, photoURLLarge: URL?, photoURLSmall: URL?, id: UUID, sourceURL: URL?, youtubeURL: URL?) -> (model: RecipeModel, json: [String: Any]) {
         let recipe = RecipeModel(cuisine: cuisine,
                                  name: name!,

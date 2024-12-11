@@ -35,8 +35,11 @@ class RecipeMapper {
                 throw RecipeMapperError.emptyList
             }
             return response.recipes
-        } catch {
+            
+        } catch _ as DecodingError {
             throw RecipeMapperError.invalidData
+        } catch {
+            throw RecipeMapperError.emptyList
         }
     }
     
