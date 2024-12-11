@@ -19,7 +19,7 @@ class RecipeMapper {
         var errorDescription: String? {
             switch self {
             case .invalidData:
-                return "Data is invalid or malformed."
+                return "Data is invalid or malformed"
             case .emptyList:
                 return "No recipes are available"
             }

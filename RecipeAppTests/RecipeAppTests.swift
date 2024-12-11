@@ -22,7 +22,26 @@ final class RecipeAppTests: XCTestCase {
         
     }
     
-    /// 2. Valid JSON Decoding
+    /// 2. Invalid JSON
+    func test_invalidJSON() {
+        let invalidJSON = ["recipes": [
+            "cuisine": "British",
+            "name": "Apple Frangipan Tart",
+            "photo_url_large": "https://d3jbb8n5wk0qxi.cloudfront.net/photos/7276e9f9-02a2-47a0-8d70-d91bdb149e9e/large.jpg",
+            "photo_url_small": "https://d3jbb8n5wk0qxi.cloudfront.net/photos/7276e9f9-02a2-47a0-8d70-d91bdb149e9e/small.jpg",
+            "uuid": "74f6d4eb-da50-4901-94d1-deae2d8af1d1",
+            "youtube_url": "https://www.youtube.com/watch?v=rp8Slv4INLk"
+            
+        ]]
+        let jsonData = try! JSONSerialization.data(withJSONObject: invalidJSON, options: .prettyPrinted)
+        
+        XCTAssertThrowsError(try RecipeMapper.decode(from: jsonData)) { error in
+            XCTAssertEqual(error as? RecipeMapper.RecipeMapperError, .invalidData, "Data is invalid or malformed")
+        }
+        
+    }
+    
+    /// 3. Valid JSON Decoding
     func test_validateJSON() throws {
         // Arrange: Valid JSON
         let recipeJSON = makeRecipeItem(cuisine: "British",
@@ -50,7 +69,7 @@ final class RecipeAppTests: XCTestCase {
     
     
     // MARK: - Helpers
-    private func makeRecipeItem(cuisine: String, name: String? = nil, photoURLLarge: URL?, photoURLSmall: URL?, id: UUID, sourceURL: URL?, youtubeURL: URL?) -> (model: RecipeModel, json: [String: Any]) {
+    private func makeRecipeItem(cuisine: String, name: String? = nil, photoURLLarge: URL? = nil, photoURLSmall: URL? = nil, id: UUID, sourceURL: URL? = nil, youtubeURL: URL? = nil) -> (model: RecipeModel, json: [String: Any]) {
         let recipe = RecipeModel(cuisine: cuisine,
                                  name: name!,
                                  photoURLLarge: photoURLLarge,
