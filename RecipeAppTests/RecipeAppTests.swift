@@ -10,27 +10,57 @@ import XCTest
 
 final class RecipeAppTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    // Valid JSON Decoding
+    func test_validateJSON() throws {
+        // Arrange: Valid JSON
+        let recipeJSON = makeRecipeItem(cuisine: "British",
+                                     name: "Bakewell Tart",
+                                     photoURLLarge: URL(string: "http://a-photoURLLarge-url.com")!,
+                                     photoURLSmall: URL(string: "http://a-photoURLSmall-url.com")!,
+                                     id: UUID(),
+                                     sourceURL: URL(string: "http://a-sourceURL-url.com")!,
+                                     youtubeURL: URL(string: "http://a-youtubeURL-url.com")!)
+        
+        let expectedRecipes = [recipeJSON.model]
+        
+        // Wrap the recipe JSON in a "recipes" array
+        let topLevelJSON = ["recipes": [recipeJSON.json]]
+        
+        // Act: Convert JSON to Data
+        let jsonData = try JSONSerialization.data(withJSONObject: topLevelJSON, options: .prettyPrinted)
+        
+        // Act: Decode JSON
+        let recipes = try RecipeMapper.decode(from: jsonData)
+        
+        // Assert: Verify decoded models match expected models
+        XCTAssertEqual(recipes, expectedRecipes)
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    private func makeRecipeItem(cuisine: String, name: String? = nil, photoURLLarge: URL?, photoURLSmall: URL?, id: UUID, sourceURL: URL?, youtubeURL: URL?) -> (model: RecipeModel, json: [String: Any]) {
+        let recipe = RecipeModel(cuisine: cuisine,
+                                 name: name!,
+                                 photoURLLarge: photoURLLarge,
+                                 photoURLSmall: photoURLSmall,
+                                 id: id, sourceURL: sourceURL,
+                                 youtubeURL: youtubeURL)
+        
+        let json: [String: Any] = [
+            "cuisine": cuisine,
+            "name": name,
+            "photo_url_large": photoURLLarge?.absoluteString,
+            "photo_url_small": photoURLSmall?.absoluteString,
+            "uuid": id.uuidString,
+            "source_url": sourceURL?.absoluteString,
+            "youtube_url": youtubeURL?.absoluteString
+        ].compactMapValues { $0 }
+        
+        return (recipe, json)
     }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    
+    private func recipeRecipeJSON(_ recipes: [[String: Any]]) -> Data {
+        let json = ["recipes": recipes]
+        
+        return try! JSONSerialization.data(withJSONObject: json)
     }
 
 }
