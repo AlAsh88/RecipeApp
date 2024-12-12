@@ -26,3 +26,9 @@ public struct RecipeModel: Codable, Equatable {
         case youtubeURL = "youtube_url"
     }
 }
+
+extension RecipeModel {
+    func isValid() -> Bool {
+        return !name.isEmpty
+    }
+}

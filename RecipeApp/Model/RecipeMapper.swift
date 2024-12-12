@@ -34,8 +34,13 @@ class RecipeMapper {
             guard !response.recipes.isEmpty else {
                 throw RecipeMapperError.emptyList
             }
-            return response.recipes
             
+            let validRecipes = response.recipes.filter({ $0.isValid() })
+            guard validRecipes.count == response.recipes.count else {
+                throw RecipeMapperError.invalidData
+            }
+            
+            return validRecipes
         } catch _ as DecodingError {
             throw RecipeMapperError.invalidData
         } catch {
