@@ -78,7 +78,6 @@ final class RecipeAppTests: XCTestCase {
     
     /// 4. Valid JSON Decoding
     func test_validateJSON() throws {
-        // Arrange: Valid JSON
         let recipeJSON = makeRecipeItem(cuisine: "British",
                                      name: "Bakewell Tart",
                                      photoURLLarge: URL(string: "http://a-photoURLLarge-url.com")!,
@@ -89,16 +88,12 @@ final class RecipeAppTests: XCTestCase {
         
         let expectedRecipes = [recipeJSON.model]
         
-        // Wrap the recipe JSON in a "recipes" array
         let topLevelJSON = ["recipes": [recipeJSON.json]]
         
-        // Act: Convert JSON to Data
         let jsonData = try JSONSerialization.data(withJSONObject: topLevelJSON, options: .prettyPrinted)
         
-        // Act: Decode JSON
         let recipes = try RecipeMapper.decode(from: jsonData)
         
-        // Assert: Verify decoded models match expected models
         XCTAssertEqual(recipes, expectedRecipes)
     }
     
