@@ -13,8 +13,7 @@ final class RecipeAppTests: XCTestCase {
     // MARK: - Tests
     /// 1. Empty JSON
     func test_emptyJSON() {
-        let emptyJSONList = ["recipes": []]
-        let jsonData = try! JSONSerialization.data(withJSONObject: emptyJSONList, options: .prettyPrinted)
+        let jsonData = serializeRecipeJSON([])
         
         XCTAssertThrowsError(try RecipeMapper.decode(from: jsonData)) { error in
             XCTAssertEqual(error as? RecipeMapper.RecipeMapperError, .emptyList, "No recipes are available")
@@ -32,7 +31,7 @@ final class RecipeAppTests: XCTestCase {
             "youtube_url": "https://www.youtube.com/watch?v=rp8Slv4INLk"
             
         ]]
-        let jsonData = try! JSONSerialization.data(withJSONObject: invalidJSON, options: .prettyPrinted)
+        let jsonData = serializeRecipeJSON([invalidJSON])
         
         XCTAssertThrowsError(try RecipeMapper.decode(from: jsonData)) { error in
             XCTAssertEqual(error as? RecipeMapper.RecipeMapperError, .invalidData, "Data is invalid or malformed")
@@ -41,7 +40,7 @@ final class RecipeAppTests: XCTestCase {
     
     /// 3. Malformed JSON
     func test_malformedJSON_throwsInvalidDataErrorForMissingRequiredFields() {
-        let test_malformedJSON: [String: Any] = ["recipes": [
+        let malformedJSON: [String: Any] = ["recipes": [
             [
                 "cuisine": "British",
                 "photo_url_large": "https://d3jbb8n5wk0qxi.cloudfront.net/photos/535dfe4e-5d61-4db6-ba8f-7a27b1214f5d/large.jpg",
@@ -69,7 +68,7 @@ final class RecipeAppTests: XCTestCase {
         ]
         ]
         
-        let jsonData = try! JSONSerialization.data(withJSONObject: test_malformedJSON, options: .prettyPrinted)
+        let jsonData = serializeRecipeJSON([malformedJSON])
         
         XCTAssertThrowsError(try RecipeMapper.decode(from: jsonData)) { error in
             XCTAssertEqual(error as? RecipeMapper.RecipeMapperError, .invalidData, "JSON data is malformed")
@@ -87,10 +86,7 @@ final class RecipeAppTests: XCTestCase {
                                      youtubeURL: URL(string: "http://a-youtubeURL-url.com")!)
         
         let expectedRecipes = [recipeJSON.model]
-        
-        let topLevelJSON = ["recipes": [recipeJSON.json]]
-        
-        let jsonData = try JSONSerialization.data(withJSONObject: topLevelJSON, options: .prettyPrinted)
+        let jsonData = serializeRecipeJSON([recipeJSON.json])
         
         let recipes = try RecipeMapper.decode(from: jsonData)
         
@@ -120,10 +116,10 @@ final class RecipeAppTests: XCTestCase {
         return (recipe, json)
     }
     
-    private func recipeRecipeJSON(_ recipes: [[String: Any]]) -> Data {
+    private func serializeRecipeJSON(_ recipes: [[String: Any]]) -> Data {
         let json = ["recipes": recipes]
         
-        return try! JSONSerialization.data(withJSONObject: json)
+        return try! JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
     }
 
 }
