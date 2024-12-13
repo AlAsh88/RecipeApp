@@ -41,7 +41,13 @@ class RecipeMapper {
             }
             
             return validRecipes
-        } catch _ as DecodingError {
+        } catch DecodingError.typeMismatch {
+            throw RecipeMapperError.invalidData
+        } catch DecodingError.keyNotFound {
+            throw RecipeMapperError.invalidData
+        } catch DecodingError.valueNotFound {
+            throw RecipeMapperError.invalidData
+        } catch DecodingError.dataCorrupted {
             throw RecipeMapperError.invalidData
         } catch {
             throw RecipeMapperError.emptyList
