@@ -55,7 +55,7 @@ class RecipeAPIServiceTests: XCTestCase {
         }
     }
     
-    
+    /// 4. Fetch recipes with valid JSON
     func test_fetchRecipes_validJSON() async {
         do {
             let singleSession = MockURLSession(data: MockData.validRecipesJSON(with: 1), response: nil, error: nil)

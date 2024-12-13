@@ -8,11 +8,11 @@
 import Foundation
 
 protocol URLSessionProtocol {
-    func data(from url: URL) async throws -> (Data, URLResponse)
+    func dataResponse(from url: URL) async throws -> (Data, URLResponse)
 }
 
 extension URLSession: URLSessionProtocol {
-    func data(from url: URL) async throws -> (Data, URLResponse) {
+    func dataResponse(from url: URL) async throws -> (Data, URLResponse) {
         return try await data(from: url, delegate: nil)
     }
 }
@@ -21,14 +21,20 @@ class MockURLSession: URLSessionProtocol {
     let data: Data?
     let response: URLResponse?
     let error: Error?
+    var simulateConnectivityError: Bool
     
-    init(data: Data?, response: URLResponse?, error: Error?) {
+    init(data: Data?, response: URLResponse?, error: Error?, simulateConnectivityError: Bool = false) {
         self.data = data
         self.response = response
         self.error = error
+        self.simulateConnectivityError = simulateConnectivityError
     }
     
-    func data(from url: URL) async throws -> (Data, URLResponse) {
+    func dataResponse(from url: URL) async throws -> (Data, URLResponse) {
+        if simulateConnectivityError {
+            throw URLError(.notConnectedToInternet)
+        }
+        
         if let error = error {
             throw error
         }

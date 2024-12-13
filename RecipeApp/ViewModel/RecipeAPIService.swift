@@ -13,7 +13,7 @@ class RecipeAPIService {
     
     func fetchRecipes() async throws -> [RecipeModel] {
         let url = URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")!
-        let (data, _) = try await session.data(from: url)
+        let (data, _) = try await session.dataResponse(from: url)
         let recipeResponse = try RecipeMapper.decode(from: data)
         
         return recipeResponse
