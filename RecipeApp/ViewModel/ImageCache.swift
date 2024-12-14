@@ -11,8 +11,8 @@ class ImageCache {
     static let shared = ImageCache()
     var session: URLSessionProtocol
     
-    private let cacheDirectory: URL
-    private var memoryCache: [URL: UIImage] = [:]
+    let cacheDirectory: URL
+    var memoryCache: [URL: UIImage] = [:]
     
     init(session: URLSessionProtocol = URLSession.shared) {
         let paths = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
@@ -55,3 +55,12 @@ class ImageCache {
     }
     
 }
+
+extension ImageCache {
+    func reset() {
+        memoryCache.removeAll()
+        let fileManager = FileManager.default
+        try? fileManager.removeItem(at: cacheDirectory)
+    }
+}
+
