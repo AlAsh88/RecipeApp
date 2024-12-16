@@ -33,6 +33,25 @@ class RecipeViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+   
+    @IBAction func sortButtonTapped(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: "Sort Recipes", message: "Choose sorting option", preferredStyle: .actionSheet)
+        
+        alert.addAction(UIAlertAction(title: "By Name", style: .default) { _ in
+            self.recipes.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            self.recipeTableView.reloadData()
+        })
+        
+        alert.addAction(UIAlertAction(title: "By Cuisine", style: .default) { _ in
+            self.recipes.sort { $0.cuisine.localizedCaseInsensitiveCompare($1.cuisine) == .orderedAscending }
+            self.recipeTableView.reloadData()
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(alert, animated: true)
+    }
+    
     func fetchRecipes() async {
         do {
             recipes = try await RecipeAPIService.shared.fetchRecipes()
@@ -45,21 +64,20 @@ class RecipeViewController: UIViewController, UITableViewDataSource, UITableView
             }
         }
     }
-        
-        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            guard !recipes.isEmpty else {
-                return 0
-            }
-            return recipes.count
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard !recipes.isEmpty else {
+            return 0
         }
+        return recipes.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "RecipeCell", for: indexPath) as! RecipeCell
+        let recipe = recipes[indexPath.row]
+        cell.configure(with: recipe)
         
-        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "RecipeCell", for: indexPath) as! RecipeCell
-            let recipe = recipes[indexPath.row]
-            cell.configure(with: recipe)
-            
-            return cell
-        }
+        return cell
+    }
     
 }
-
