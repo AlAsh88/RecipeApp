@@ -27,10 +27,6 @@ class RecipeCell: UITableViewCell {
         nameLabel?.text = recipe.name
         cuisineType?.text = recipe.cuisine
         
-//        print("!!!! nameLabel is \(nameLabel == nil ? "nil" : "connected")")
-//        print("!!!! cuisineType is \(cuisineType == nil ? "nil" : "connected")")
-
-        
         recipeImageView?.image = nil
         
         if let photoURL = recipe.photoURLSmall {
@@ -46,5 +42,5 @@ class RecipeCell: UITableViewCell {
             }
         }
     }
-    
+
 }
